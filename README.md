@@ -71,16 +71,16 @@ The calendar should be able to calculate the pickup times:
 
 ```ruby
 job = Job.new(:performance)
-calendar.pickup_time(job, dropoff_time: "Jun 7, 2016  9:10 AM") # => Mon Jun 07 10:22:00 2016
-calendar.pickup_time(job, dropoff_time: "Jun 7, 2016  2:10 PM") # => Thu Jun 09 09:22:00 2016
-calendar.pickup_time(job, dropoff_time: "Sep 3, 2016 12:10 PM") # => Tue Sep 06 09:22:00 2016
+calendar.pickup_time(job, dropoff_time: "Jun 6, 2016  9:10 AM") # => Mon Jun 06 10:22:00 2016
+calendar.pickup_time(job, dropoff_time: "Jun 6, 2016  2:10 PM") # => Wed Jun 08 09:22:00 2016
+calendar.pickup_time(job, dropoff_time: "Sep 3, 2016 12:10 PM") # => Wed Sep 07 09:22:00 2016
 ```
 
 In the first example the job duration is 72 minutes. Since the 72 minutes fall within business hours, the customer can pick up their equipment the same day.
 
-In the second example, the drop off time is 50 minutes before closing time which leaves 22 minutes remaining to be added to the next business day. The next day is Wednesday and therefore closed, so the resulting time is 22 minutes after opening on the following day.
+In the second example, the drop off time is 50 minutes before closing time which leaves 22 minutes remaining to be added to the next business day. The next day is Tuesday and therefore closed, so the resulting time is 22 minutes after opening on the following day.
 
-The last example is the Saturday before the Labor Day holiday and Steezy's is only open until 1pm that day. They are closed the next two days (Sunday + Monday holiday) therefore the pickup is not until 22 minutes after opening on Sep 6th.
+The last example is the Saturday before the Labor Day holiday and Steezy's is only open until 1pm that day. They are closed the next three days (Sunday, Monday for the holiday, and Tuesday) therefore the pickup is not until 22 minutes after opening on Wednesday September 7th.
 
 <hr>
 
