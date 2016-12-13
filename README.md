@@ -59,8 +59,8 @@ job.duration                 #=> 2400 (seconds)
 job.price                    #=> 53.33 (dollars)
 
 job = Job.new(:performance)  #=> a package
-job.duration                 #=> 3120 (seconds)
-job.price                    #=> 69.33 (dollars)
+job.duration                 #=> 4320 (seconds)
+job.price                    #=> 96.00 (dollars)
 
 job = Job.new(:basic, :ptex) #=> package + additional service
 job.duration                 #=> 3600 (seconds)
@@ -86,11 +86,12 @@ The last example is the Saturday before the Labor Day holiday and Steezy's is on
 
 ## Instructions
 
-Download [the zip](https://github.com/printreleaf/kata/archive/master.zip) of this repository. There are skeleton test and implementation files to help get you started.
-
-Use RSpec for your tests. Commit frequently and atomically.
-
-This should be a pure Ruby program, using only the Ruby standard libraries (no external gems or libraries). You do not need to build a gem for this, pure Ruby code is all that is needed.
+* Download [the zip](https://github.com/printreleaf/kata/archive/master.zip) of this repository.
+* There are skeleton test and implementation files to help get you started.
+* Use RSpec for your tests. Run `$ rspec spec` to get started.
+* Commit frequently and atomically.
+* This should be a pure Ruby program, using only the Ruby standard libraries (no external gems or libraries).
+* You do not need to build a gem for this, pure Ruby code is all that is needed.
 
 **Tip:** Use `Time.parse` to generate a `Time` from a string. You may need to `require 'time'` in order to do this.
 
