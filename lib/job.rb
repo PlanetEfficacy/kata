@@ -24,8 +24,6 @@ class Job
   end
 
   def duration
-    services.reduce(0) do |sum, service|
-      sum += jobs[service][:duration]
-    end
+    services.reduce(0) { |sum, service| sum += jobs[service][:duration] } 
   end
 end
