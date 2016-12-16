@@ -1,8 +1,12 @@
 class Calendar
-  attr_reader :opens_at,
-              :closes_at
+  attr_accessor :hours
+
+  def initialize
+    @hours = Hash.new
+  end
+
   def open(open, close)
-    @opens_at = Time.parse(open)
-    @closes_at = Time.parse(close)
+    hours[:open] = Time.parse(open)
+    hours[:close] = Time.parse(close)
   end
 end
