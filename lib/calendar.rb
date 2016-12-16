@@ -1,3 +1,4 @@
+require 'pry'
 class Calendar
   attr_accessor :hours
 
@@ -12,5 +13,9 @@ class Calendar
 
   def update(day, open, close)
     hours[day] = { open: Time.parse(open), close: Time.parse(close) }
+  end
+
+  def closed(*days)
+    hours[:closed] = days
   end
 end

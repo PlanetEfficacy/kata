@@ -16,17 +16,15 @@ describe Calendar do
   end
 
   describe Calendar, "#update" do
-    it "changes the opening and closing time for a given day symbolic" do
+    it "changes the opening and closing time for a given symbolic day" do
       calendar.update(:fri, "10:00 AM", "5:00 PM")
-
       expected = { open: Time.parse("10:00 AM"), close: Time.parse("5:00 PM") }
 
       expect(calendar.hours[:fri]).to eq(expected)
     end
 
-    it "changes the opening and closing time for a given day string" do
+    it "changes the opening and closing time for a given string day" do
       calendar.update("Sep 3, 2016", "8:00 AM", "1:00 PM")
-
       expected = { open: Time.parse("8:00 AM"), close: Time.parse("1:00 PM") }
 
       expect(calendar.hours["Sep 3, 2016"]).to eq(expected)
@@ -34,8 +32,9 @@ describe Calendar do
   end
 
   describe Calendar, "#closed" do
-    xit "sets which days the shop is not open" do
-      pending
+    it "sets which days the shop is not open" do
+      calendar.closed(:sun, :tue, "Sep 5, 2016")
+      expect(calendar.hours[:closed]).to eq([:sun, :tue, "Sep 5, 2016"])
     end
   end
 
