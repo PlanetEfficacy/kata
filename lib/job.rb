@@ -3,36 +3,22 @@ class Job
               :jobs
 
   def initialize(*services)
-    @services = services
-    @jobs = {
-      wax: {
-        duration: 900,
-        price: 20.00
-      },
-      edge: {
-        duration: 1500,
-        price: 33.33
-      },
-      performance: {
-        duration: 4320,
-        price: 96.00
-      },
-      basic: {
-        # duration:
-        # price:
-      },
-      ptex: {
-        # duration:
-        # price:
-      }
-    }
+    # @services = services
+    # @rate = 80.00
+    # @service = {  wax:          900,
+    #               edge:         1500,
+    #               base:         720,
+    #               ptex:         1200,
+    #               basic:        service[:wax] + :edge,
+    #               deluxe:       :wax + :edge + :base,
+    #               performance:  :wax + :edge + :base + :ptex  }
   end
 
   def duration
-    services.reduce(0) { |sum, service| sum += jobs[service][:duration] }
+    services.reduce(0) { |sum, service| sum += jobs[service] }
   end
 
   def price
-    services.reduce(0) { |sum, service| sum += jobs[service][:price] }
+    (duration / 45.00).round(2)
   end
 end
