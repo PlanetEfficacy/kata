@@ -1,22 +1,27 @@
 require_relative "../lib/job"
+describe Job do
 
-describe Job, "#duration" do
-  it "returns the total number of seconds the job will take to complete" do
-    job_1 = Job.new(:wax)
-    job_2 = Job.new(:edge, :wax)
-    job_3 = Job.new(:performance)
-    job_4 = Job.new(:basic, :ptex)
+  let(:job_1) { Job.new(:wax) }
+  let(:job_2) { Job.new(:edge, :wax) }
+  let(:job_3) { Job.new(:performance) }
+  let(:job_4) { Job.new(:basic, :ptex) }
 
-    expect(job_1.duration).to eq(900)
-    expect(job_2.duration).to eq(2400)
-    expect(job_3.duration).to eq(4320)
-    # expect(job_4.duration).to eq(3600)
+  describe Job, "#duration" do
+    it "returns the total number of seconds the job will take to complete" do
+      expect(job_1.duration).to eq(900)
+      expect(job_2.duration).to eq(2400)
+      expect(job_3.duration).to eq(4320)
+      # expect(job_4.duration).to eq(3600)
+    end
   end
-end
 
-describe Job, "#price" do
-  xit "returns the total price of the job" do
-    pending
+  describe Job, "#price" do
+    it "returns the total price of the job" do
+      expect(job_1.price).to eq(20.00)
+      expect(job_2.price).to eq(53.33)
+      expect(job_3.price).to eq(96.00)
+      # expect(job_4.duration).to eq(80.00)
+    end
   end
 end
 
