@@ -5,13 +5,7 @@ class Job
   def initialize(*services)
     # @services = services
     # @rate = 80.00
-    # @service = {  wax:          900,
-    #               edge:         1500,
-    #               base:         720,
-    #               ptex:         1200,
-    #               basic:        service[:wax] + :edge,
-    #               deluxe:       :wax + :edge + :base,
-    #               performance:  :wax + :edge + :base + :ptex  }
+
   end
 
   def duration
