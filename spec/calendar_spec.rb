@@ -21,7 +21,7 @@ describe Calendar do
 
       expected = { open: Time.parse("10:00 AM"), close: Time.parse("5:00 PM") }
 
-      expect(calendar.day[:fri]).to eq(expected)
+      expect(calendar.hours[:fri]).to eq(expected)
     end
   end
 
