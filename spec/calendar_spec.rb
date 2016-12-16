@@ -23,6 +23,14 @@ describe Calendar do
 
       expect(calendar.hours[:fri]).to eq(expected)
     end
+
+    it "changes the opening and closing time for a given day string" do
+      calendar.update("Sep 3, 2016", "8:00 AM", "1:00 PM")
+
+      expected = { open: Time.parse("8:00 AM"), close: Time.parse("1:00 PM") }
+
+      expect(calendar.hours["Sep 3, 2016"]).to eq(expected)
+    end
   end
 
   describe Calendar, "#closed" do
