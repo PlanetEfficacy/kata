@@ -2,7 +2,14 @@ require_relative "../lib/calendar"
 
 describe Calendar, "#open" do
   it "sets the normal business hours of the shop" do
-    pending
+    calendar = Calendar.new
+    calendar.open("9:00 AM", "3:00 PM")
+
+    openning = Time.parse("9:00 AM")
+    closing = Time.parse("3:00 PM")
+
+    expect(calendar.opens_at).to eq(openning)
+    expect(calendar.closes_at).to eq(closing)
   end
 end
 
@@ -23,4 +30,3 @@ describe Calendar, "#pickup_time" do
     pending
   end
 end
-
