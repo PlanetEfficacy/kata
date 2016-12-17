@@ -1,33 +1,31 @@
 class Job
-  attr_reader :shop
+  attr_reader :shop, :job_items
 
-  def initialize(*job_item)
-    # @shop = Shop.new("Steezy's")
-    # services.each { |service| @shop.add_service(service) }
-    # packages.each { |package| @shop.add_package(package) }
-    # @job_items = job_item.map { |item| find_service_or_package(item) }
+  def initialize(shop, *job_item)
+    @shop = shop
+    @job_items = job_item.flatten.map { |item| find_service_or_package(item) }
   end
 
   def duration
-    services.reduce(0) { |sum, service| sum += jobs[service] }
+    job_items.reduce(0) { |sum, item| sum += item.duration }
   end
 
   def price
     (duration / 45.00).round(2)
   end
 
-  # private
-  #
-  #
-  #   def find_service_or_package(item)
-  #     find_service(item) || find_package(item)
-  #   end
-  #
-  #   def find_service(item)
-  #     shop.services.find { |service| service.name == item }
-  #   end
-  #
-  #   def find_package(item)
-  #     shop.packages.find { |package| package.name == item }
-  #   end
+  private
+
+    def find_service_or_package(item)
+      @item = item
+      find_service || find_package
+    end
+
+    def find_service
+      shop.services.find { |service| service.name == @item }
+    end
+
+    def find_package
+      shop.packages.find { |package| package.name == @item }
+    end
 end

@@ -40,7 +40,10 @@ describe Calendar do
 
   describe Calendar, "#pickup_time" do
     xit "returns the time the job is available to be picked up" do
-      pending
+      job = Job.new(:performance)
+      calendar.pickup_time(job, dropoff_time: "Jun 6, 2016  9:10 AM") # => Mon Jun 06 10:22:00 2016
+      calendar.pickup_time(job, dropoff_time: "Jun 6, 2016  2:10 PM") # => Wed Jun 08 09:22:00 2016
+      calendar.pickup_time(job, dropoff_time: "Sep 3, 2016 12:10 PM") # => Wed Sep 07 09:22:00 2016
     end
   end
 end

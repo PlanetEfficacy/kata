@@ -15,7 +15,7 @@ class Shop
     packages.push(package)
   end
 
-  def add_job(job_items)
-    jobs.push(Job.new(job_items))
+  def add_job(*job_items)
+    jobs << Job.new(self, job_items)
   end
 end
