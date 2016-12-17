@@ -1,9 +1,10 @@
 class Shop
-  attr_reader :name, :services, :packages
+  attr_reader :name, :services, :packages, :jobs
   def initialize(name)
     @name = name
     @services = []
     @packages = []
+    @jobs = []
   end
 
   def add_service(service)
@@ -12,5 +13,9 @@ class Shop
 
   def add_package(package)
     packages.push(package)
+  end
+
+  def add_job(job_items)
+    jobs.push(Job.new(job_items))
   end
 end

@@ -26,4 +26,10 @@ describe Shop do
     expect(shop.packages.first.name).to eq(:basic)
     expect(shop.packages.last.name).to eq(:deluxe)
   end
+
+  it "can create a job" do
+    shop.add_job(:wax)
+    expect(shop.jobs.count).to eq(1)
+    expect(shop.jobs.first.class).to eq(Job)
+  end
 end

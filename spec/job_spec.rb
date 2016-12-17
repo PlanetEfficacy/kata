@@ -6,8 +6,22 @@ describe Job do
   let(:job_3) { Job.new(:performance) }
   let(:job_4) { Job.new(:basic, :ptex) }
 
+  let(:services) { [Service.new(:wax, 900), Service.new(:edge, 1500),
+                    Service.new(:base, 720), Service.new(:ptex, 1200) ]}
+
+  let(:packages) { [Package.new(:basic, [services[0], services[1]]),
+                    Package.new(:deluxe, [services[0], services[1], services[2]]),
+                    Package.new(:performance, services)]}
+
+  def setup_shop
+    shop = Shop.new("Steezy's")
+    services.each { |service| shop.add_service(service)}
+    packages.each { |service| shop.add_service(service)}
+    return shop
+  end
+
   describe Job, "#duration" do
-    xit "returns the total number of seconds the job will take to complete" do
+    it "returns the total number of seconds the job will take to complete" do
       expect(job_1.duration).to eq(900)
       expect(job_2.duration).to eq(2400)
       expect(job_3.duration).to eq(4320)
@@ -24,6 +38,18 @@ describe Job do
     end
   end
 end
+
+
+def services
+
+end
+
+def packages
+  [ Package.new(:basic, [services[0], services[1]]),
+    Package.new(:deluxe, [services[0], services[1], services[2]]),
+    Package.new(:performance, services) ]
+end
+
 
 
 # job = Job.new(:wax)          #=> single service
