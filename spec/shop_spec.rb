@@ -32,4 +32,10 @@ describe Shop do
     expect(shop.jobs.count).to eq(1)
     expect(shop.jobs.first.class).to eq(Job)
   end
+
+  describe "has a calendar" do
+    it "can return its calendar" do
+      expect(shop.calendar).to be_instance_of(Calendar)
+    end
+  end
 end

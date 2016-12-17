@@ -1,7 +1,7 @@
 require_relative "../lib/calendar"
 
 describe Calendar do
-  let(:calendar) { Calendar.new }
+  let(:calendar) { Calendar.new("shop") }
 
   describe Calendar, "#open" do
     it "sets the normal business hours of the shop" do
@@ -39,11 +39,33 @@ describe Calendar do
   end
 
   describe Calendar, "#pickup_time" do
-    xit "returns the time the job is available to be picked up" do
-      job = Job.new(:performance)
-      calendar.pickup_time(job, dropoff_time: "Jun 6, 2016  9:10 AM") # => Mon Jun 06 10:22:00 2016
-      calendar.pickup_time(job, dropoff_time: "Jun 6, 2016  2:10 PM") # => Wed Jun 08 09:22:00 2016
-      calendar.pickup_time(job, dropoff_time: "Sep 3, 2016 12:10 PM") # => Wed Sep 07 09:22:00 2016
+    it "returns the time the job is available to be picked up" do
+      dropoff_1 = "Jun 6, 2016  9:10 AM"
+      dropoff_2 = "Jun 6, 2016  2:10 PM"
+      dropoff_3 = "Sep 3, 2016 12:10 PM"
+      expected_pickup_1 = "Mon Jun 06 10:22:00 2016"
+      expected_pickup_2 = "Wed Jun 08 09:22:00 2016"
+      expected_pickup_3 = "Wed Sep 07 09:22:00 2016"
+      shop = Shop.new("Steezy's")
+      services = [ Service.new(:wax, 900), Service.new(:edge, 1500),
+                   Service.new(:base, 720), Service.new(:ptex, 1200) ]
+      services.each { |service| shop.add_service(service) }
+      shop.add_package(Package.new(:performance, services))
+      shop.add_job(:performance)
+      cal = shop.calendar
+      cal.open("9:00 AM", "3:00 PM")
+      cal.update(:fri, "10:00 AM", "5:00 PM")
+      cal.update("Sep 3, 2016", "8:00 AM", "1:00 PM")
+      cal.closed(:sun, :tue, "Sep 5, 2016")
+      job = shop.jobs.first
+      #
+      # pickup_1 = cal.pickup_time(job, dropoff_time: dropoff_1)
+      # pickup_2 = cal.pickup_time(job, dropoff_time: dropoff_2)
+      pickup_3 = cal.pickup_time(job, dropoff_time: dropoff_3)
+
+      # expect(pickup_1).to eq(expected_pickup_1)
+      # expect(pickup_2).to eq(expected_pickup_2)
+      expect(pickup_3).to eq(expected_pickup_3)
     end
   end
 end

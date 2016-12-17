@@ -1,10 +1,17 @@
+include Forwardable
+
 class Shop
-  attr_reader :name, :services, :packages, :jobs
+  extend Forwardable
+  def_delegators :@calendar, :open, :hours, :update, :closed, :pickup_time
+
+  attr_reader :name, :services, :packages, :jobs, :calendar
+
   def initialize(name)
     @name = name
     @services = []
     @packages = []
     @jobs = []
+    @calendar = Calendar.new(self)
   end
 
   def add_service(service)
