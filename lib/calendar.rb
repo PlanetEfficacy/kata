@@ -25,12 +25,19 @@ class Calendar
     @time = time
     @job = job
     @pickup = drop_off + job.duration
+
+    if special_hours_apply?
+      binding.pry
+    end
+
     if after_close?
       extra_time = Time.parse(pickup.strftime("%H:%M:%S")) - hours[:close]
       @pickup = increment_day(drop_off_day) + extra_time
     end
-    while closed?
+
+    while closed_that_day?
       @pickup = increment_day(Date.parse(@pickup.to_s)) + ( extra_time || 0 )
+      binding.pry
     end
     stringify_pickup
   end
@@ -86,5 +93,9 @@ class Calendar
 
     def special_hours_apply?
       special_days.any? { |day| Date.parse(day) == Date.parse(@pickup.to_s) }
+    end
+
+    def get_special_hours
+      special_days.find { |day| Date.parse(day) == Date.parse(@pickup.to_s) }
     end
 end
