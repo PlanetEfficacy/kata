@@ -33,11 +33,8 @@ class Scheduler
   end
 
   def extra_time
-    if special_hours?(Date.parse(drop_off.to_s))
-      Time.parse(pickup.strftime("%H:%M:%S")) - get_special_hours(Date.parse(drop_off.to_s))[:close]
-    else
-      Time.parse(pickup.strftime("%H:%M:%S")) - hours[:close]
-    end
+    return pickup_time - closing if normal_hours?
+    return special_day_extra_time if not_normal_hours?
   end
 
   def get_pickup
@@ -58,50 +55,35 @@ class Scheduler
 
   def increment(day)
     Date.parse(day.to_s) + 1
-    # day = Date.parse(day.to_s)
-    # Time.parse((day + 1).to_s + " " + drop_off_day.to_s + " " + hours[:open].strftime("%H:%M:%S"))
   end
-
-  # def closed_tomorrow?(date)
-  #   closed_days_of_the_week.any? { |day| day.to_s.capitalize == date.strftime("%a") }
-  # end
 
   private
 
-  def normal_hours?
-    !special_hours?(Date.parse(drop_off.to_s))
-  end
+    def normal_hours?
+      !special_hours?(Date.parse(drop_off.to_s))
+    end
 
-  def not_normal_hours?
-    special_hours?(Date.parse(drop_off.to_s))
-  end
+    def not_normal_hours?
+      special_hours?(Date.parse(drop_off.to_s))
+    end
 
-  def pickup_time
-    Time.parse(pickup.strftime("%H:%M:%S"))
-  end
+    def pickup_time
+      Time.parse(pickup.strftime("%H:%M:%S"))
+    end
 
-  def drop_off_date
-    Date.parse(drop_off.to_s)
-  end
+    def drop_off_date
+      Date.parse(drop_off.to_s)
+    end
 
-  def pickup_past_closing?
-    pickup_time > closing
-  end
+    def pickup_past_closing?
+      pickup_time > closing
+    end
 
-  def pickup_past_special_closing?
-    pickup_time > get_special_closing(drop_off_date)
-  end
+    def pickup_past_special_closing?
+      pickup_time > get_special_closing(drop_off_date)
+    end
 
-
-  # special_hours?(Date.parse(drop_off.to_s))
-
-  # def closed_that_week_day?
-  #   cal.hours[:closed].any? { |day| day.to_s.capitalize === pickup.strftime("%a")}
-  # end
-  #
-  # def closed_that_date?
-  #   cal.hours[:closed].any? do |day|
-  #     day.class != Symbol && Date.parse(day) === Date.parse(pickup.to_s)
-  #   end
-  # end
+    def special_day_extra_time
+      pickup_time - get_special_closing(drop_off_date)
+    end
 end
