@@ -20,6 +20,13 @@ describe Job do
     return shop
   end
 
+  describe Job, "#new" do
+    it "is instantiated with a shop and array of job items" do
+      job = Job.new(shop, jobs)
+      expect(job).to be_a(Job)
+    end
+  end
+
   describe Job, "#duration" do
     it "returns the total number of seconds the job will take to complete" do
       durations = shop.jobs.map { |job| job.duration }
