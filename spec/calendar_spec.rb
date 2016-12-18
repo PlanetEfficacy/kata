@@ -38,8 +38,30 @@ describe Calendar do
     end
   end
 
+  describe Calendar, "#closed_days_of_the_week" do
+    it "returns an array of closed days" do
+      calendar.closed(:sun, :tue, "Sep 5, 2016")
+      expect(calendar.closed_days_of_the_week).to eq([:sun, :tue])
+    end
+  end
+
+  describe Calendar, "#closed_days" do
+    it "returns an array of closed days" do
+      calendar.closed(:sun, "Dec 17, 2016", "Sep 5, 2016")
+      expect(calendar.closed_days).to eq(["Dec 17, 2016", "Sep 5, 2016"])
+    end
+  end
+
+  describe Calendar, "#closed?(date)" do
+    it "returns true if closed on a given day" do
+      calendar.closed(:sun, "Dec 17, 2016")
+      expect(calendar.closed?(Date.parse("Dec 17, 2016"))).to eq(true)
+      expect(calendar.closed?(Date.parse("Dec 18, 2016"))).to eq(true)
+    end
+  end
+
   describe Calendar, "#pickup_time" do
-    it "returns the time the job is available to be picked up" do
+    xit "returns the time the job is available to be picked up" do
       dropoff_1 = "Jun 6, 2016  9:10 AM"
       dropoff_2 = "Jun 6, 2016  2:10 PM"
       dropoff_3 = "Sep 3, 2016 12:10 PM"
