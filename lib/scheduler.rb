@@ -1,3 +1,4 @@
+require 'Forwardable'
 require_relative "../lib/calendar"
 class Scheduler
   extend Forwardable

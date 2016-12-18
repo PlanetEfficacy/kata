@@ -81,5 +81,12 @@ describe Scheduler do
 
       expect(scheduler.get_pickup).to eq(Time.parse("Sep 8, 2016 9:30 AM"))
     end
+
+    it "returns pickup when the job is longer than store hours" do
+      cal.open("9:00 AM", "9:05 AM")
+      scheduler = Scheduler.new(cal, "Sep 7, 2016  9:00 AM", 900)
+
+      expect(scheduler.get_pickup).to eq(Time.parse("Sep 9, 2016 9:05 AM"))
+    end
   end
 end
