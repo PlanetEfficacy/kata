@@ -22,11 +22,11 @@ class Calendar
   end
 
   def closed_days_of_the_week
-    hours[:closed].reject { |day| day.class == String }
+    hours[:closed].reject { |day| day.class == String } if hours[:closed]
   end
 
   def closed_days
-    hours[:closed].reject { |day| day.class == Symbol }
+    hours[:closed].reject { |day| day.class == Symbol } if hours[:closed]
   end
 
   def closed?(date)
@@ -41,16 +41,21 @@ class Calendar
     special_days.map { |day| Date.parse(day) }.include?(date)
   end
 
-  def get_special_hours(date)
+    def get_special_hours(date)
     hours[special_days.find { |day| Date.parse(day) == date }]
+  end
+
+  def pickup_time(job, time)
+    pickup = Scheduler.new(self, time[:dropoff_time], job.duration).get_pickup
+    stringify_pickup(pickup)
   end
 
   private
     def closed_on?(date)
       if date.class == Date
-        closed_days.map { |day| Date.parse(day) }.include?(date)
+        closed_days && closed_days.map { |day| Date.parse(day) }.include?(date)
       else
-        closed_days_of_the_week.include?(date)
+        closed_days_of_the_week && closed_days_of_the_week.include?(date)
       end
     end
 
@@ -99,9 +104,9 @@ class Calendar
     #   Time.parse((day + 1).to_s + " " + drop_off_day.to_s + " " + hours[:open].strftime("%H:%M:%S"))
     # end
     #
-    # def stringify_pickup
-    #   @pickup.strftime("%a %b %d %I:%M:%S %Y")
-    # end
+    def stringify_pickup(pickup)
+      pickup.strftime("%a %b %d %I:%M:%S %Y")
+    end
     #
     # def after_close?
     #   Time.parse(pickup.strftime("%H:%M:%S")) > hours[:close]

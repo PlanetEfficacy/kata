@@ -5,7 +5,8 @@ class Scheduler
                  :closed_days_of_the_week,
                  :hours,
                  :closed?,
-                 :special_hours?
+                 :special_hours?,
+                 :get_special_hours
 
   attr_reader :calendar, :drop_off, :duration
 
@@ -32,11 +33,19 @@ class Scheduler
   end
 
   def after_hours?
-    Time.parse(pickup.strftime("%H:%M:%S")) > hours[:close]
+    if special_hours?(Date.parse(drop_off.to_s))
+      Time.parse(pickup.strftime("%H:%M:%S")) > get_special_hours(Date.parse(drop_off.to_s))[:close]
+    else
+      Time.parse(pickup.strftime("%H:%M:%S")) > hours[:close]
+    end
   end
 
   def extra_time
-    Time.parse(pickup.strftime("%H:%M:%S")) - hours[:close]
+    if special_hours?(Date.parse(drop_off.to_s))
+      Time.parse(pickup.strftime("%H:%M:%S")) - get_special_hours(Date.parse(drop_off.to_s))[:close]
+    else
+      Time.parse(pickup.strftime("%H:%M:%S")) - hours[:close]
+    end
   end
 
   def get_pickup
@@ -46,10 +55,12 @@ class Scheduler
         day = increment(day)
       end
       if special_hours?(day)
-        # binding.pry
+        Time.parse(day.to_s + " " + get_special_hours(day)[:open].strftime("%H:%M:%S")) + extra_time
       else
         Time.parse(day.to_s + " " + hours[:open].strftime("%H:%M:%S")) + extra_time
       end
+    else
+      pickup
     end
   end
 

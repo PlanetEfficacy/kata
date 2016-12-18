@@ -86,7 +86,7 @@ describe Calendar do
   end
 
   describe Calendar, "#pickup_time" do
-    xit "returns the time the job is available to be picked up" do
+    it "returns the time the job is available to be picked up" do
       dropoff_1 = "Jun 6, 2016  9:10 AM"
       dropoff_2 = "Jun 6, 2016  2:10 PM"
       dropoff_3 = "Sep 3, 2016 12:10 PM"
@@ -105,13 +105,13 @@ describe Calendar do
       cal.update("Sep 3, 2016", "8:00 AM", "1:00 PM")
       cal.closed(:sun, :tue, "Sep 5, 2016")
       job = shop.jobs.first
-      #
-      # pickup_1 = cal.pickup_time(job, dropoff_time: dropoff_1)
-      # pickup_2 = cal.pickup_time(job, dropoff_time: dropoff_2)
+
+      pickup_1 = cal.pickup_time(job, dropoff_time: dropoff_1)
+      pickup_2 = cal.pickup_time(job, dropoff_time: dropoff_2)
       pickup_3 = cal.pickup_time(job, dropoff_time: dropoff_3)
 
-      # expect(pickup_1).to eq(expected_pickup_1)
-      # expect(pickup_2).to eq(expected_pickup_2)
+      expect(pickup_1).to eq(expected_pickup_1)
+      expect(pickup_2).to eq(expected_pickup_2)
       expect(pickup_3).to eq(expected_pickup_3)
     end
   end
