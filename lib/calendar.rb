@@ -30,13 +30,13 @@ class Calendar
   end
 
   def closed?(date)
-    closed_on?(string_date(date)) || closed_on?(day_of_week_symbol(date))
+    closed_on?(date) || closed_on?(day_of_week_symbol(date))
   end
 
   private
     def closed_on?(date)
-      if date.class == String
-        closed_days.include?(date)
+      if date.class == Date
+        closed_days.map { |day| Date.parse(day) }.include?(date)
       else
         closed_days_of_the_week.include?(date)
       end

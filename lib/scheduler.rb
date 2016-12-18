@@ -1,7 +1,7 @@
 require_relative "../lib/calendar"
 class Scheduler
   extend Forwardable
-  def_delegators :@calendar, :closed_days_of_the_week, :hours
+  def_delegators :@calendar, :closed_days_of_the_week, :hours, :closed?
 
   attr_reader :calendar, :drop_off, :duration
 
@@ -24,7 +24,7 @@ class Scheduler
   end
 
   def pickup
-    @pickup ||= drop_off + duration
+    drop_off + duration
   end
 
   def after_hours?
@@ -35,9 +35,25 @@ class Scheduler
     Time.parse(pickup.strftime("%H:%M:%S")) - hours[:close]
   end
 
-  def closed_tomorrow?(date)
-    closed_days_of_the_week.any? { |day| day.to_s.capitalize == date.strftime("%a") }
+  def get_pickup
+    if after_hours?
+      day = increment(drop_off)
+      while closed?(day)
+        day = increment(day)
+      end
+      Time.parse(day.to_s + " " + hours[:open].strftime("%H:%M:%S")) + extra_time
+    end
   end
+
+  def increment(day)
+    Date.parse(day.to_s) + 1
+    # day = Date.parse(day.to_s)
+    # Time.parse((day + 1).to_s + " " + drop_off_day.to_s + " " + hours[:open].strftime("%H:%M:%S"))
+  end
+
+  # def closed_tomorrow?(date)
+  #   closed_days_of_the_week.any? { |day| day.to_s.capitalize == date.strftime("%a") }
+  # end
 
   private
 

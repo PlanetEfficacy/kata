@@ -61,23 +61,51 @@ describe Scheduler do
     expect(scheduler.extra_time).to eq(1320)
   end
 
-  it "knows if it has special hours tomorrow" do
-
-  end
-
-# maybe I don't need
-  it "knows if it is closed tomorrow" do
+  it "can increment days" do
     cal = Calendar.new("shop")
-    cal.closed(:sun, "Sep 5, 2016")
+    scheduler = Scheduler.new(cal, "Sep 3, 2016  9:10 AM", 4320)
 
-    drop_off_1 = "Dec 18, 2016  2:00 PM"
-    drop_off_2 = "Sep 4, 2016  9:10 AM"
-    scheduler_1 = Scheduler.new(cal, drop_off_1, 4320)
-    scheduler_2 = Scheduler.new(cal, drop_off_2, 4320)
-
-    expect(scheduler_1.closed_tomorrow?).to eq(true)
-    expect(scheduler_2.closed_tomorrow?).to eq(true)
+    expect(scheduler.increment("Sep 3, 2016  9:10 AM")).to eq(Date.parse("Sep 4, 2016"))
   end
+
+  it "schedules pick up considering extra time" do
+    cal = Calendar.new("shop")
+    cal.open("9:00 AM", "10:00 AM")
+    cal.closed("Sep 2, 2016")
+    scheduler = Scheduler.new(cal, "Sep 3, 2016  9:30 AM", 3600)
+
+    expect(scheduler.get_pickup).to eq(Time.parse("Sep 4, 2016  9:30 AM"))
+  end
+
+  it "schedules pickup considering extra time and closed days" do
+    cal = Calendar.new("shop")
+    cal.open("9:00 AM", "10:00 AM")
+    cal.closed(:mon, :tue, "Sep 4, 2016")
+    scheduler = Scheduler.new(cal, "Sep 3, 2016  9:30 AM", 3600)
+    expect(scheduler.get_pickup).to eq(Time.parse("Sep 7, 2016  9:30 AM"))
+  end
+
+  it "schedules pickup considering extra time, closed days, and special hours" do
+
+  end
+
+#   it "knows if it has special hours tomorrow" do
+#
+#   end
+#
+# # maybe I don't need
+#   it "knows if it is closed tomorrow" do
+#     cal = Calendar.new("shop")
+#     cal.closed(:sun, "Sep 5, 2016")
+#
+#     drop_off_1 = "Dec 18, 2016  2:00 PM"
+#     drop_off_2 = "Sep 4, 2016  9:10 AM"
+#     scheduler_1 = Scheduler.new(cal, drop_off_1, 4320)
+#     scheduler_2 = Scheduler.new(cal, drop_off_2, 4320)
+#
+#     expect(scheduler_1.closed_tomorrow?).to eq(true)
+#     expect(scheduler_2.closed_tomorrow?).to eq(true)
+#   end
 
 
 
