@@ -89,4 +89,13 @@ describe Scheduler do
       expect(scheduler.get_pickup).to eq(Time.parse("Sep 9, 2016 9:05 AM"))
     end
   end
+
+  describe Scheduler, "#long_job" do
+    it "returns true if a duration is longer than the work day" do
+      cal.open("9:00 AM", "9:05 AM")
+      scheduler = Scheduler.new(cal, "Sep 7, 2016  9:00 AM", 900)
+
+      expect(scheduler.long_job?).to eq(true)
+    end
+  end
 end

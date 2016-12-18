@@ -40,7 +40,6 @@ class Calendar
     closed_on?(date) || closed_on?(day_of_week_symbol(date))
   end
 
-
   def special_days
     hours.keys.reject { |key| key.class == Symbol }
   end
@@ -66,6 +65,12 @@ class Calendar
     stringify_pickup(pickup)
   end
 
+  def work_day(date)
+    return hours[day_of_week_symbol(date)] if hours[day_of_week_symbol(date)]
+    return hours[find_work_day(date)] if hours[find_work_day(date)]
+    return { open: openning, close: closing }
+  end
+
   private
     def closed_on?(date)
       if date.class == Date
@@ -85,5 +90,9 @@ class Calendar
 
     def stringify_pickup(pickup)
       pickup.strftime("%a %b %d %I:%M:%S %Y")
+    end
+
+    def find_work_day(date)
+      hours.keys.find { |day| day.class == String && Date.parse(day) == date }
     end
 end

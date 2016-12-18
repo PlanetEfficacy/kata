@@ -2,6 +2,7 @@ require_relative "../lib/calendar"
 
 describe Calendar do
   let(:calendar) { Calendar.new("shop") }
+  let(:shop) { Shop.new("Steezy's") }
 
   describe Calendar, "#open" do
     it "sets the normal business hours of the shop" do
@@ -111,8 +112,6 @@ describe Calendar do
       expected_pickup_2 = "Wed Jun 08 09:22:00 2016"
       expected_pickup_3 = "Wed Sep 07 09:22:00 2016"
 
-      shop = Shop.new("Steezy's")
-
       services = [ Service.new(:wax, 900), Service.new(:edge, 1500),
                    Service.new(:base, 720), Service.new(:ptex, 1200) ]
 
@@ -137,6 +136,23 @@ describe Calendar do
       expect(pickup_1).to eq(expected_pickup_1)
       expect(pickup_2).to eq(expected_pickup_2)
       expect(pickup_3).to eq(expected_pickup_3)
+    end
+  end
+
+  describe Calendar, "#work_day" do
+    it "returns work day hours for a given date object" do
+      cal = shop.calendar
+      cal.open("9:00 AM", "3:00 PM")
+      cal.update(:fri, "10:00 AM", "5:00 PM")
+      cal.update("Sep 3, 2016", "8:00 AM", "1:00 PM")
+
+      hours_1 = { open: Time.parse("10:00 AM"), close: Time.parse("5:00 PM")}
+      hours_2 = { open: Time.parse("8:00 AM"), close: Time.parse("1:00 PM")}
+      hours_3 = { open: Time.parse("9:00 AM"), close: Time.parse("3:00 PM")}
+
+      expect(cal.work_day(Date.parse("Sep 2, 2016"))).to eq(hours_1)
+      expect(cal.work_day(Date.parse("Sep 3, 2016"))).to eq(hours_2)
+      expect(cal.work_day(Date.parse("Sep 4, 2016"))).to eq(hours_3)
     end
   end
 end

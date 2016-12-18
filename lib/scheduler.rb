@@ -1,3 +1,4 @@
+require 'pry'
 require 'Forwardable'
 require_relative "../lib/calendar"
 class Scheduler
@@ -10,7 +11,8 @@ class Scheduler
                  :closing,
                  :openning,
                  :get_special_openning,
-                 :get_special_closing
+                 :get_special_closing,
+                 :work_day
 
   attr_reader :calendar, :drop_off, :duration
 
@@ -42,6 +44,11 @@ class Scheduler
     return pickup unless after_hours?
     day = find_next_open_day(increment(drop_off))
     Time.parse(day.to_s + " " + start_time(day)) + extra_time
+  end
+
+  def long_job?
+    day = work_day(drop_off_date)
+    duration > day[:close] - day[:open]
   end
 
   def increment(day)
