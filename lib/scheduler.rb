@@ -2,13 +2,13 @@ require_relative "../lib/calendar"
 class Scheduler
   extend Forwardable
   def_delegators :@calendar,
-                #  :closed_days_of_the_week,
                  :hours,
                  :closed?,
                  :special_hours?,
                  :get_special_hours,
                  :closing,
-                #  :get_special_openning,
+                 :openning,
+                 :get_special_openning,
                  :get_special_closing
 
   attr_reader :calendar, :drop_off, :duration
@@ -33,24 +33,14 @@ class Scheduler
   end
 
   def extra_time
-    return pickup_time - closing if normal_hours?
+    return normal_day_extra_time if normal_hours?
     return special_day_extra_time if not_normal_hours?
   end
 
   def get_pickup
-    if after_hours?
-      day = increment(drop_off)
-      while closed?(day)
-        day = increment(day)
-      end
-      if special_hours?(day)
-        Time.parse(day.to_s + " " + get_special_hours(day)[:open].strftime("%H:%M:%S")) + extra_time
-      else
-        Time.parse(day.to_s + " " + hours[:open].strftime("%H:%M:%S")) + extra_time
-      end
-    else
-      pickup
-    end
+    return pickup unless after_hours?
+    day = find_next_open_day(increment(drop_off))
+    Time.parse(day.to_s + " " + start_time(day)) + extra_time
   end
 
   def increment(day)
@@ -58,6 +48,17 @@ class Scheduler
   end
 
   private
+
+    def find_next_open_day(day)
+      while closed?(day)
+        day = increment(day)
+      end
+      return day
+    end
+
+    def time_format(time)
+      time.strftime("%H:%M:%S")
+    end
 
     def normal_hours?
       !special_hours?(Date.parse(drop_off.to_s))
@@ -68,7 +69,7 @@ class Scheduler
     end
 
     def pickup_time
-      Time.parse(pickup.strftime("%H:%M:%S"))
+      Time.parse(time_format(pickup))
     end
 
     def drop_off_date
@@ -83,7 +84,15 @@ class Scheduler
       pickup_time > get_special_closing(drop_off_date)
     end
 
+    def normal_day_extra_time
+      pickup_time - closing
+    end
+
     def special_day_extra_time
       pickup_time - get_special_closing(drop_off_date)
+    end
+
+    def start_time(day)
+      time_format(special_hours?(day) ? get_special_openning(day) : openning)
     end
 end
