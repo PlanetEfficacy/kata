@@ -155,4 +155,14 @@ describe Calendar do
       expect(cal.work_day(Date.parse("Sep 4, 2016"))).to eq(hours_3)
     end
   end
+
+  describe Calendar, "#open?" do
+    it "returns true if the shop is open on a given date" do
+      calendar.closed(:sun, "Dec 17, 2016")
+      expect(calendar.open?(Date.parse("Dec 17, 2016"))).to eq(false)
+      expect(calendar.open?(Date.parse("Dec 18, 2016"))).to eq(false)
+      expect(calendar.open?(Date.parse("Dec 19, 2016"))).to eq(true)
+      expect(calendar.open?(Date.parse("Dec 16, 2016"))).to eq(true)
+    end
+  end
 end

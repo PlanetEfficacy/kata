@@ -40,6 +40,10 @@ class Calendar
     closed_on?(date) || closed_on?(day_of_week_symbol(date))
   end
 
+  def open?(date)
+    !closed?(date)
+  end
+
   def special_days
     hours.keys.reject { |key| key.class == Symbol }
   end
