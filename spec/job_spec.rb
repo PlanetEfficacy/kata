@@ -14,22 +14,10 @@ describe Job do
 
   def setup_shop
     shop = Shop.new("Steezy's")
-    add_services(shop)
-    add_packages(shop)
-    add_jobs(shop)
-    return shop
-  end
-
-  def add_services(shop)
-    services.each { |service| shop.add_service(service)}
-  end
-
-  def add_packages(shop)
-    packages.each { |package| shop.add_package(package)}
-  end
-
-  def add_jobs(shop)
+    services.each { |service| shop.add_service(service) }
+    packages.each { |package| shop.add_package(package) }
     jobs.each { |job_items| shop.add_job(job_items) }
+    return shop
   end
 
   describe Job, "#duration" do
