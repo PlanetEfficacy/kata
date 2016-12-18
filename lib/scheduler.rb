@@ -1,7 +1,11 @@
 require_relative "../lib/calendar"
 class Scheduler
   extend Forwardable
-  def_delegators :@calendar, :closed_days_of_the_week, :hours, :closed?
+  def_delegators :@calendar,
+                 :closed_days_of_the_week,
+                 :hours,
+                 :closed?,
+                 :special_hours?
 
   attr_reader :calendar, :drop_off, :duration
 
@@ -41,7 +45,11 @@ class Scheduler
       while closed?(day)
         day = increment(day)
       end
-      Time.parse(day.to_s + " " + hours[:open].strftime("%H:%M:%S")) + extra_time
+      if special_hours?(day)
+        # binding.pry
+      else
+        Time.parse(day.to_s + " " + hours[:open].strftime("%H:%M:%S")) + extra_time
+      end
     end
   end
 

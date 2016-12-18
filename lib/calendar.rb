@@ -33,6 +33,18 @@ class Calendar
     closed_on?(date) || closed_on?(day_of_week_symbol(date))
   end
 
+  def special_days
+    hours.keys.reject { |key| key.class == Symbol }
+  end
+
+  def special_hours?(date)
+    special_days.map { |day| Date.parse(day) }.include?(date)
+  end
+
+  def get_special_hours(date)
+    hours[special_days.find { |day| Date.parse(day) == date }]
+  end
+
   private
     def closed_on?(date)
       if date.class == Date

@@ -86,7 +86,13 @@ describe Scheduler do
   end
 
   it "schedules pickup considering extra time, closed days, and special hours" do
-
+    cal = Calendar.new("shop")
+    cal.open("9:00 AM", "10:00 AM")
+    cal.closed(:mon, :tue, "Sep 4, 2016")
+    cal.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
+    scheduler = Scheduler.new(cal, "Sep 3, 2016  9:30 AM", 3600)
+    
+    expect(scheduler.get_pickup).to eq(Time.parse("Sep 7, 2016  8:30 AM"))
   end
 
 #   it "knows if it has special hours tomorrow" do

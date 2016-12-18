@@ -60,6 +60,31 @@ describe Calendar do
     end
   end
 
+  describe Calendar, "#special_days" do
+    it "returns an array of days with special hours" do
+      calendar.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
+      calendar.update("Jan 8, 2016", "8:00 AM", "1:00 PM")
+
+      expect(calendar.special_days).to eq(["Sep 7, 2016", "Jan 8, 2016"])
+    end
+  end
+
+  describe Calendar, "#special_hours?(date)" do
+    it "returns true if closed on a given day" do
+      calendar.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
+      expect(calendar.special_hours?(Date.parse("Sep 7, 2016"))).to eq(true)
+      expect(calendar.special_hours?(Date.parse("Dec 18, 2016"))).to eq(false)
+    end
+  end
+
+  describe Calendar, "#get_special_hours(date)" do
+    it "returns a hash of open and closed hours" do
+      calendar.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
+      hours = { open: Time.parse("8:00 AM"), close: Time.parse("1:00 PM")}
+      expect(calendar.get_special_hours(Date.parse("Sep 7, 2016"))).to eq(hours)
+    end
+  end
+
   describe Calendar, "#pickup_time" do
     xit "returns the time the job is available to be picked up" do
       dropoff_1 = "Jun 6, 2016  9:10 AM"
