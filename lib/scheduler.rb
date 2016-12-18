@@ -2,11 +2,14 @@ require_relative "../lib/calendar"
 class Scheduler
   extend Forwardable
   def_delegators :@calendar,
-                 :closed_days_of_the_week,
+                #  :closed_days_of_the_week,
                  :hours,
                  :closed?,
                  :special_hours?,
-                 :get_special_hours
+                 :get_special_hours,
+                 :closing,
+                #  :get_special_openning,
+                 :get_special_closing
 
   attr_reader :calendar, :drop_off, :duration
 
@@ -20,24 +23,13 @@ class Scheduler
     Date.parse(drop_off.to_s)
   end
 
-  def get_special_days
-    hours.reject { |day| day.class == Symbol }
-  end
-
-  def special_hours_apply?
-    get_special_days.keys.any? { |day| Date.parse(day) == Date.parse(drop_off.to_s) }
-  end
-
   def pickup
     drop_off + duration
   end
 
   def after_hours?
-    if special_hours?(Date.parse(drop_off.to_s))
-      Time.parse(pickup.strftime("%H:%M:%S")) > get_special_hours(Date.parse(drop_off.to_s))[:close]
-    else
-      Time.parse(pickup.strftime("%H:%M:%S")) > hours[:close]
-    end
+    return pickup_past_closing? if normal_hours?
+    return pickup_past_special_closing? if not_normal_hours?
   end
 
   def extra_time
@@ -75,6 +67,33 @@ class Scheduler
   # end
 
   private
+
+  def normal_hours?
+    !special_hours?(Date.parse(drop_off.to_s))
+  end
+
+  def not_normal_hours?
+    special_hours?(Date.parse(drop_off.to_s))
+  end
+
+  def pickup_time
+    Time.parse(pickup.strftime("%H:%M:%S"))
+  end
+
+  def drop_off_date
+    Date.parse(drop_off.to_s)
+  end
+
+  def pickup_past_closing?
+    pickup_time > closing
+  end
+
+  def pickup_past_special_closing?
+    pickup_time > get_special_closing(drop_off_date)
+  end
+
+
+  # special_hours?(Date.parse(drop_off.to_s))
 
   # def closed_that_week_day?
   #   cal.hours[:closed].any? { |day| day.to_s.capitalize === pickup.strftime("%a")}

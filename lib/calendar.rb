@@ -13,6 +13,14 @@ class Calendar
     hours[:close] = Time.parse(close)
   end
 
+  def openning
+    hours[:open]
+  end
+
+  def closing
+    hours[:close]
+  end
+
   def update(day, open, close)
     hours[day] = { open: Time.parse(open), close: Time.parse(close) }
   end
@@ -33,6 +41,7 @@ class Calendar
     closed_on?(date) || closed_on?(day_of_week_symbol(date))
   end
 
+
   def special_days
     hours.keys.reject { |key| key.class == Symbol }
   end
@@ -41,8 +50,16 @@ class Calendar
     special_days.map { |day| Date.parse(day) }.include?(date)
   end
 
-    def get_special_hours(date)
+  def get_special_hours(date)
     hours[special_days.find { |day| Date.parse(day) == date }]
+  end
+
+  def get_special_openning(date)
+    get_special_hours(date)[:open]
+  end
+
+  def get_special_closing(date)
+    get_special_hours(date)[:close]
   end
 
   def pickup_time(job, time)

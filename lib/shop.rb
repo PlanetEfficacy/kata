@@ -1,5 +1,3 @@
-include Forwardable
-
 class Shop
   extend Forwardable
   def_delegators :@calendar, :open, :hours, :update, :closed, :pickup_time

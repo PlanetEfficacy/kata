@@ -10,8 +10,8 @@ describe Calendar do
       openning = Time.parse("9:00 AM")
       closing = Time.parse("3:00 PM")
 
-      expect(calendar.hours[:open]).to eq(openning)
-      expect(calendar.hours[:close]).to eq(closing)
+      expect(calendar.openning).to eq(openning)
+      expect(calendar.closing).to eq(closing)
     end
   end
 
@@ -82,6 +82,22 @@ describe Calendar do
       calendar.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
       hours = { open: Time.parse("8:00 AM"), close: Time.parse("1:00 PM")}
       expect(calendar.get_special_hours(Date.parse("Sep 7, 2016"))).to eq(hours)
+    end
+  end
+
+  describe Calendar, "#get_special_openning(date)" do
+    it "returns the opnning of a given special day" do
+      calendar.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
+      openning = calendar.get_special_openning(Date.parse("Sep 7, 2016"))
+      expect(openning).to eq(Time.parse("8:00 AM"))
+    end
+  end
+
+  describe Calendar, "#get_special_openning(date)" do
+    it "returns the opnning of a given special day" do
+      calendar.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
+      openning = calendar.get_special_closing(Date.parse("Sep 7, 2016"))
+      expect(openning).to eq(Time.parse("1:00 PM"))
     end
   end
 
