@@ -1,14 +1,38 @@
 require_relative "../lib/package"
 
+# describe Package do
+#   it "has a name, price, and duration" do
+#     wax = Service.new(:wax, 900)
+#     edge = Service.new(:edge, 1500)
+#
+#     package = Package.new(:basic, [wax, edge])
+#
+#     expect(package.name).to eq(:basic)
+#     expect(package.duration).to eq(2400)
+#     expect(package.price).to eq(5333)
+#   end
+# end
+
 describe Package do
-  it "has a name, price, and duration" do
-    wax = Service.new(:wax, 900)
-    edge = Service.new(:edge, 1500)
+  let(:wax) { Service.new(:wax, 900) }
+  let(:edge) { Service.new(:edge, 1500) }
+  let(:package) { Package.new(:basic, [wax, edge]) }
 
-    package = Package.new(:basic, [wax, edge])
+  describe Package, "#name" do
+    it "gets the name of the package" do
+      expect(package.name).to eq(:basic)
+    end
+  end
 
-    expect(package.name).to eq(:basic)
-    expect(package.duration).to eq(2400)
-    expect(package.price).to eq(5333)
+  describe Package, "#price" do
+    it "gets the price of the package" do
+      expect(package.price).to eq(5333)
+    end
+  end
+
+  describe Package, "#duration" do
+    it "gets the duration of the package" do
+      expect(package.duration).to eq(2400)
+    end
   end
 end
