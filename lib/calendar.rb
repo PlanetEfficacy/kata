@@ -36,33 +36,34 @@ class Calendar
     hours[:closed].reject { |day| day.class == Symbol } if hours[:closed]
   end
 
-  def closed?(date)
-    closed_on?(date) || closed_on?(day_of_week_symbol(date))
-  end
-
-  def open?(date)
-    !closed?(date)
-  end
+  # def closed?(date)
+  #   closed_on?(date) || closed_on?(day_of_week_symbol(date))
+  # end
+  #
+  # def open?(date)
+  #   !closed?(date)
+  # end
 
   def special_days
-    hours.keys.reject { |key| key.class == Symbol }
+    throw_away = [:open, :close, :closed]
+    hours.keys.reject { |key| throw_away.include?(key) }
   end
 
-  def special_hours?(date)
-    special_days.map { |day| Date.parse(day) }.include?(date)
-  end
-
-  def get_special_hours(date)
-    hours[special_days.find { |day| Date.parse(day) == date }]
-  end
-
-  def get_special_openning(date)
-    get_special_hours(date)[:open]
-  end
-
-  def get_special_closing(date)
-    get_special_hours(date)[:close]
-  end
+  # def special_hours?(date)
+  #   special_days.map { |day| Date.parse(day) }.include?(date)
+  # end
+  #
+  # def get_special_hours(date)
+  #   hours[special_days.find { |day| Date.parse(day) == date }]
+  # end
+  #
+  # def get_special_openning(date)
+  #   get_special_hours(date)[:open]
+  # end
+  #
+  # def get_special_closing(date)
+  #   get_special_hours(date)[:close]
+  # end
 
   def pickup_time(job, time)
     pickup = Scheduler.new(self, time[:dropoff_time], job.duration).get_pickup
