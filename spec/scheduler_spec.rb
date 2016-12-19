@@ -1,101 +1,88 @@
 require_relative "../lib/scheduler"
 
 describe Scheduler do
-
   let(:cal) { Calendar.new("shop") }
   let(:scheduler) { scheduler = Scheduler.new(cal, "Jun 6, 2016  9:10 AM", 4320) }
 
   describe Scheduler, "#new" do
-    xit "is instantiated with a calednar, drop off time, and a duration" do
-      expect(scheduler.calendar).to eq(cal)
+    it "is instantiated with a calendar, drop off time, and a duration" do
+      expect(scheduler.cal).to eq(cal)
       expect(scheduler.drop_off).to eq(Time.parse("Jun 6, 2016  9:10 AM"))
+      expect(scheduler.date).to eq(Date.parse("Jun 6, 2016  9:10 AM"))
       expect(scheduler.duration).to eq(4320)
     end
   end
 
-  describe Scheduler, "#drop_off_day" do
-    xit "returns the drop off time as a date object" do
-      expect(scheduler.drop_off_day).to eq(Date.parse("Jun 6, 2016  9:10 AM"))
-    end
-  end
-
-  describe Scheduler, "#pickup" do
-    xit "return a pickup by adding the duration to the drop off time" do
-      expect(scheduler.pickup).to eq(Time.parse("Jun 6, 2016 10:22 AM"))
-    end
-  end
-
-  describe Scheduler, "#after_hours?" do
-    xit "returns true if #pickup is after hours" do
-      cal.open("9:00 AM", "10:00 AM")
-
-      expect(scheduler.after_hours?).to eq(true)
-    end
-  end
-
-  describe Scheduler, "#extra_time" do
-    xit "returns time in seconds remaining on a job after shop hours" do
-      cal.open("9:00 AM", "10:00 AM")
-
-      expect(scheduler.extra_time).to eq(1320)
-    end
-  end
-
-  describe Scheduler, "#increment(day)" do
-    it "returns a date object one day in the future of the input day" do
-      date = Time.parse("Sep 3, 2016  9:10 AM")
-      expected = Date.parse("Sep 4, 2016")
-
-      expect(scheduler.increment(date)).to eq(expected)
-    end
-  end
-
-  describe Scheduler, "#get_pickup" do
-    xit "returns pickup considering extra time" do
-      cal.open("9:00 AM", "10:00 AM")
-      scheduler = Scheduler.new(cal, "Sep 3, 2016  9:30 AM", 3600)
-
-      expect(scheduler.get_pickup).to eq(Time.parse("Sep 4, 2016  9:30 AM"))
-    end
-
-    xit "returns pickup considering extra time and closed days" do
-      cal.open("9:00 AM", "10:00 AM")
-      cal.closed(:mon, :tue, "Sep 4, 2016")
-      scheduler = Scheduler.new(cal, "Sep 3, 2016  9:30 AM", 3600)
-      expect(scheduler.get_pickup).to eq(Time.parse("Sep 7, 2016  9:30 AM"))
-    end
-
-    xit "returns pickup considering extra time, closed days, and special hours" do
-      cal.open("9:00 AM", "10:00 AM")
-      cal.closed(:mon, :tue, "Sep 4, 2016")
-      cal.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
-      scheduler = Scheduler.new(cal, "Sep 3, 2016  9:30 AM", 3600)
-
-      expect(scheduler.get_pickup).to eq(Time.parse("Sep 7, 2016  8:30 AM"))
-    end
-
-    xit "returns pickup considering drop off on a day with special hours" do
+  describe Scheduler, "#run returns a pickup time object for:" do
+    it "normal day, duration before closing" do
       cal.open("9:00 AM", "3:00 PM")
-      cal.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
-      scheduler = Scheduler.new(cal, "Sep 7, 2016  12:30 PM", 3600)
-
-      expect(scheduler.get_pickup).to eq(Time.parse("Sep 8, 2016 9:30 AM"))
+      expect(scheduler.run).to eq(Time.parse("Jun 6, 2016 10:22 AM"))
     end
 
-    xit "returns pickup when the job is longer than store hours" do
-      cal.open("9:00 AM", "9:05 AM")
-      scheduler = Scheduler.new(cal, "Sep 7, 2016  9:00 AM", 900)
-
-      expect(scheduler.get_pickup).to eq(Time.parse("Sep 9, 2016 9:05 AM"))
+    it "normal day, duration after closing" do
+      cal.open("9:00 AM", "10:00 AM")
+      expect(scheduler.run).to eq(Time.parse("Jun 7, 2016 9:22 AM"))
     end
-  end
 
-  describe Scheduler, "#long_job" do
-    xit "returns true if a duration is longer than the work day" do
-      cal.open("9:00 AM", "9:05 AM")
-      scheduler = Scheduler.new(cal, "Sep 7, 2016  9:00 AM", 900)
+    it "normal day, druation after closing, and following 2 days are closed" do
+      cal.open("9:00 AM", "10:00 AM")
+      cal.closed(:tue, "Jun 8, 2016")
+      expect(scheduler.run).to eq(Time.parse("Jun 9, 2016 9:22 AM"))
+    end
 
-      expect(scheduler.long_job?).to eq(true)
+    it "normal day, duration longer than multiple business days" do
+      cal.open("9:00 AM", "10:00 AM")
+      scheduler = Scheduler.new(cal, "Jun 6, 2016  9:10 AM", 36000)
+      expect(scheduler.run).to eq(Time.parse("Jun 16, 2016 9:10 AM"))
+    end
+
+    it "special day, duration before closing" do
+      cal.open("9:00 AM", "5:00 PM")
+      cal.update("Jun 6, 2016", "11:00 AM", "3:00 PM")
+      scheduler = Scheduler.new(cal, "Jun 6, 2016  2:00 PM", 3600)
+      expect(scheduler.run).to eq(Time.parse("Jun 6, 2016 3:00 PM"))
+    end
+
+    it "normal day drop off, duration after closing following day is special" do
+      cal.open("9:00 AM", "10:00 AM")
+      cal.update("Jun 7, 2016", "11:00 AM", "3:00 PM")
+      expect(scheduler.run).to eq(Time.parse("Jun 7, 2016 11:22 AM"))
+    end
+
+    it "special day, duration after closing" do
+      cal.open("9:00 AM", "5:00 PM")
+      cal.update("Jun 6, 2016", "11:00 AM", "3:00 PM")
+      scheduler = Scheduler.new(cal, "Jun 6, 2016  2:30 PM", 3600)
+      expect(scheduler.run).to eq(Time.parse("Jun 7, 2016 9:30 AM"))
+    end
+
+    it "special day, duration after closing, followed closed and special days" do
+      cal.open("9:00 AM", "5:00 PM")
+      cal.update("Jun 6, 2016", "11:00 AM", "3:00 PM")
+      cal.closed(:tue, "Jun 8, 2016", :fri)
+      cal.update("Jun 9, 2016", "2:00 PM", "2:15 PM")
+      cal.update(:sat, "2:00 PM", "2:05 PM")
+      scheduler = Scheduler.new(cal, "Jun 6, 2016  2:30 PM", 3600)
+
+      expect(scheduler.run).to eq(Time.parse("Jun 12, 2016 9:10 AM"))
+    end
+
+    it "special day, job duration longer than hours" do
+      cal.open("9:00 AM", "5:00 PM")
+      cal.update("Jun 6, 2016", "11:00 AM", "3:00 PM")
+      scheduler = Scheduler.new(cal, "Jun 6, 2016  2:30 PM", 36000)
+
+      expect(scheduler.run).to eq(Time.parse("Jun 8, 2016 10:30 AM"))
+    end
+
+    it "many special and closed days" do
+      cal.open("9:00 AM", "5:00 PM")
+      cal.closed(:tue, :wed, :thu, :fri, :sat, :sun, "Jun 13, 2016", "Jun 20, 2016")
+      cal.update("Jun 27, 2016", "2:00 AM", "2:01 AM")
+      cal.update("Jul 4, 2016", "2:00 AM", "2:09 AM")
+      scheduler = Scheduler.new(cal, "Jun 6, 2016  5:00 PM", 3600)
+      scheduler = Scheduler.new(cal, "Jun 6, 2016  5:00 PM", 3600)
+      expect(scheduler.run).to eq(Time.parse("Jul 11, 2016 9:50 AM"))
     end
   end
 end

@@ -1,106 +1,118 @@
 require 'pry'
-require 'Forwardable'
 require_relative "../lib/calendar"
-class Scheduler
-  extend Forwardable
-  def_delegators :@calendar,
-                 :hours,
-                 :closed?,
-                 :special_hours?,
-                 :get_special_hours,
-                 :closing,
-                 :openning,
-                 :get_special_openning,
-                 :get_special_closing,
-                 :work_day
+require_relative "../lib/date_inspector"
 
-  attr_reader :calendar, :drop_off, :duration
+class Scheduler
+  attr_reader :cal,
+              :drop_off,
+              :date,
+              :duration,
+              :inspector
 
   def initialize(calendar, drop_off, duration)
-    @calendar = calendar
+    @cal = calendar
     @drop_off = Time.parse(drop_off)
+    @date = Date.parse(drop_off)
     @duration = duration
   end
 
-  def drop_off_day
-    Date.parse(drop_off.to_s)
-  end
-
-  def pickup
-    drop_off + duration
-  end
-
-  def after_hours?
-    return pickup_past_closing? if normal_hours?
-    return pickup_past_special_closing? if not_normal_hours?
-  end
-
-  def extra_time
-    return normal_day_extra_time if normal_hours?
-    return special_day_extra_time if not_normal_hours?
-  end
-
-  def get_pickup
-    return pickup unless after_hours?
-    day = find_next_open_day(increment(drop_off))
-    Time.parse(day.to_s + " " + start_time(day)) + extra_time
-  end
-
-  def long_job?
-    day = work_day(drop_off_date)
-    duration > day[:close] - day[:open]
-  end
-
-  def increment(day)
-    Date.parse(day.to_s) + 1
+  def run
+    get_pickup(drop_off, duration)
   end
 
   private
 
-    def find_next_open_day(day)
-      while closed?(day)
-        day = increment(day)
+    def get_pickup(date, duration)
+      open? ? find_pickup(date, duration) : next_day(date, duration)
+    end
+
+    def open?
+      DateInspector.new(cal, @date).open?
+    end
+
+    def find_pickup(date, duration)
+      special_hours? ? handle_special(date, duration) : handle_normal(date, duration)
+    end
+
+    def special_hours?
+      DateInspector.new(cal, @date).special_hours?
+    end
+
+    def handle_normal(date, duration)
+      if time_left?(date, duration)
+        calculate_pickup(date, duration)
+      else
+        keep_searching(date)
       end
-      return day
     end
 
-    def time_format(time)
-      time.strftime("%H:%M:%S")
+    def handle_special(date, duration)
+      special_time_left?(date, duration) ? calculate_pickup(date, duration) : keep_searching(date)
     end
 
-    def normal_hours?
-      !special_hours?(Date.parse(drop_off.to_s))
+    def next_day(date, duration)
+      increment_date(date)
+      get_pickup(@date, duration)
     end
 
-    def not_normal_hours?
-      special_hours?(Date.parse(drop_off.to_s))
+    def special_time_left?(date, duration)
+      (date + duration) <= DateInspector.new(cal, @date).get_special_closing
     end
 
-    def pickup_time
-      Time.parse(time_format(pickup))
+    def time_left?(date, duration)
+      (date + duration) <= DateInspector.new(cal, @date).get_closing
     end
 
-    def drop_off_date
-      Date.parse(drop_off.to_s)
+    def calculate_pickup(date, duration)
+      date + duration
     end
 
-    def pickup_past_closing?
-      pickup_time > closing
+    def keep_searching(date)
+      remaining_duration(date)
+      increment_date(date)
+      get_pickup(@date, @duration)
     end
 
-    def pickup_past_special_closing?
-      pickup_time > get_special_closing(drop_off_date)
+    def remaining_duration(date)
+      @duration = duration - (DateInspector.new(cal, @date).get_closing - date)
     end
 
-    def normal_day_extra_time
-      pickup_time - closing
+    def increment_date(date)
+      @date = get_openning(date + 60 * 60 * 24)
     end
 
-    def special_day_extra_time
-      pickup_time - get_special_closing(drop_off_date)
+    def get_openning(date)
+      DateInspector.new(cal, date).get_openning
     end
 
-    def start_time(day)
-      time_format(special_hours?(day) ? get_special_openning(day) : openning)
-    end
+    # def remaining_duration
+    #   duration - (DateInspector.new(cal, @date).get_closing - date)
+    # end
+    # def get_pickup(date, duration)
+    #   if DateInspector.new(cal, @date).open?
+    #     if DateInspector.new(cal, @date).special_hours?
+    #       if (date + duration) <= DateInspector.new(cal, @date).get_special_closing
+    #         return date + duration
+    #       else
+    #         remaining_duration = duration - (DateInspector.new(cal, @date).get_closing - date)
+    #         @date = get_openning(date + 60 * 60 * 24)
+    #         get_pickup(@date, remaining_duration)
+    #       end
+    #     else
+    #       if (date + duration) <= DateInspector.new(cal, @date).get_closing
+    #         return date + duration
+    #       else
+    #         remaining_duration = duration - (DateInspector.new(cal, @date).get_closing - date)
+    #         @date = get_openning(date + 60 * 60 * 24)
+    #         get_pickup(@date, remaining_duration)
+    #       end
+    #     end
+    #   else
+    #     @date = get_openning(date + 60 * 60 * 24)
+    #     get_pickup(@date, duration)
+    #   end
+    # end
+
+
+
 end

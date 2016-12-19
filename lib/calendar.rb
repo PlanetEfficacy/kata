@@ -66,7 +66,7 @@ class Calendar
   # end
 
   def pickup_time(job, time)
-    pickup = Scheduler.new(self, time[:dropoff_time], job.duration).get_pickup
+    pickup = Scheduler.new(self, time[:dropoff_time], job.duration).run
     stringify_pickup(pickup)
   end
 

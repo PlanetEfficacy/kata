@@ -106,7 +106,7 @@ describe Calendar do
   # end
 
   describe Calendar, "#pickup_time" do
-    xit "returns the time the job is available to be picked up" do
+    it "returns the time the job is available to be picked up" do
       dropoff_1 = "Jun 6, 2016  9:10 AM"
       dropoff_2 = "Jun 6, 2016  2:10 PM"
       dropoff_3 = "Sep 3, 2016 12:10 PM"
