@@ -2,7 +2,6 @@
 
 #### Class documentation
 
-# The Challenge
 <table>
   <thead>
     <tr><td><b>Class</b></td><td><b>Notes</b></td></tr>
@@ -17,6 +16,8 @@
     <tr><td>Scheduler</td><td>Takes a calendar, drop off time, and job duration, and recursively searches over the calendar to find the soonest possible pick up time. It takes into account normal business hours, special business hours, durations that extend beyond business hours, and durations that extend beyond many business hours.</td></tr>
   </tbody>
 </table>
+
+# The Challenge
 
 _Steezy's_ is a full-service ski & snowboard shop known for its speedy service. The problem is, when a customer drops off their equipment, they need to know how much it costs and what time it will be available for pickup.
 
