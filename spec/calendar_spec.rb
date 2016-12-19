@@ -2,6 +2,7 @@ require_relative "../lib/calendar"
 
 describe Calendar do
   let(:calendar) { Calendar.new("shop") }
+  let(:shop) { Shop.new("Steezy's") }
 
   describe Calendar, "#open" do
     it "sets the normal business hours of the shop" do
@@ -10,8 +11,8 @@ describe Calendar do
       openning = Time.parse("9:00 AM")
       closing = Time.parse("3:00 PM")
 
-      expect(calendar.hours[:open]).to eq(openning)
-      expect(calendar.hours[:close]).to eq(closing)
+      expect(calendar.openning).to eq(openning)
+      expect(calendar.closing).to eq(closing)
     end
   end
 
@@ -39,49 +40,28 @@ describe Calendar do
   end
 
   describe Calendar, "#closed_days_of_the_week" do
-    it "returns an array of closed days" do
+    it "returns an array of closed symbol days" do
       calendar.closed(:sun, :tue, "Sep 5, 2016")
       expect(calendar.closed_days_of_the_week).to eq([:sun, :tue])
     end
   end
 
   describe Calendar, "#closed_days" do
-    it "returns an array of closed days" do
+    it "returns an array of closed string days" do
       calendar.closed(:sun, "Dec 17, 2016", "Sep 5, 2016")
       expect(calendar.closed_days).to eq(["Dec 17, 2016", "Sep 5, 2016"])
     end
   end
 
-  describe Calendar, "#closed?(date)" do
-    it "returns true if closed on a given day" do
-      calendar.closed(:sun, "Dec 17, 2016")
-      expect(calendar.closed?(Date.parse("Dec 17, 2016"))).to eq(true)
-      expect(calendar.closed?(Date.parse("Dec 18, 2016"))).to eq(true)
-    end
-  end
-
   describe Calendar, "#special_days" do
     it "returns an array of days with special hours" do
+      calendar.open("9:00 AM", "3:00 PM")
+      calendar.closed(:sun, :tue, "Sep 5, 2016")
       calendar.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
       calendar.update("Jan 8, 2016", "8:00 AM", "1:00 PM")
+      calendar.update(:mon, "10:00 AM", "2:00 PM")
 
-      expect(calendar.special_days).to eq(["Sep 7, 2016", "Jan 8, 2016"])
-    end
-  end
-
-  describe Calendar, "#special_hours?(date)" do
-    it "returns true if closed on a given day" do
-      calendar.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
-      expect(calendar.special_hours?(Date.parse("Sep 7, 2016"))).to eq(true)
-      expect(calendar.special_hours?(Date.parse("Dec 18, 2016"))).to eq(false)
-    end
-  end
-
-  describe Calendar, "#get_special_hours(date)" do
-    it "returns a hash of open and closed hours" do
-      calendar.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
-      hours = { open: Time.parse("8:00 AM"), close: Time.parse("1:00 PM")}
-      expect(calendar.get_special_hours(Date.parse("Sep 7, 2016"))).to eq(hours)
+      expect(calendar.special_days).to eq(["Sep 7, 2016", "Jan 8, 2016", :mon])
     end
   end
 
@@ -94,8 +74,6 @@ describe Calendar do
       expected_pickup_1 = "Mon Jun 06 10:22:00 2016"
       expected_pickup_2 = "Wed Jun 08 09:22:00 2016"
       expected_pickup_3 = "Wed Sep 07 09:22:00 2016"
-
-      shop = Shop.new("Steezy's")
 
       services = [ Service.new(:wax, 900), Service.new(:edge, 1500),
                    Service.new(:base, 720), Service.new(:ptex, 1200) ]

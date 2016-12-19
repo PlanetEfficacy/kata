@@ -1,88 +1,87 @@
+require 'pry'
 require_relative "../lib/calendar"
-class Scheduler
-  extend Forwardable
-  def_delegators :@calendar,
-                 :closed_days_of_the_week,
-                 :hours,
-                 :closed?,
-                 :special_hours?,
-                 :get_special_hours
+require_relative "../lib/date_inspector"
 
-  attr_reader :calendar, :drop_off, :duration
+class Scheduler
+  attr_reader :cal,
+              :drop_off,
+              :date,
+              :duration,
+              :inspector
 
   def initialize(calendar, drop_off, duration)
-    @calendar = calendar
+    @cal = calendar
     @drop_off = Time.parse(drop_off)
+    @date = Date.parse(drop_off)
     @duration = duration
   end
 
-  def drop_off_day
-    Date.parse(drop_off.to_s)
+  def run
+    get_pickup(drop_off, duration)
   end
-
-  def get_special_days
-    hours.reject { |day| day.class == Symbol }
-  end
-
-  def special_hours_apply?
-    get_special_days.keys.any? { |day| Date.parse(day) == Date.parse(drop_off.to_s) }
-  end
-
-  def pickup
-    drop_off + duration
-  end
-
-  def after_hours?
-    if special_hours?(Date.parse(drop_off.to_s))
-      Time.parse(pickup.strftime("%H:%M:%S")) > get_special_hours(Date.parse(drop_off.to_s))[:close]
-    else
-      Time.parse(pickup.strftime("%H:%M:%S")) > hours[:close]
-    end
-  end
-
-  def extra_time
-    if special_hours?(Date.parse(drop_off.to_s))
-      Time.parse(pickup.strftime("%H:%M:%S")) - get_special_hours(Date.parse(drop_off.to_s))[:close]
-    else
-      Time.parse(pickup.strftime("%H:%M:%S")) - hours[:close]
-    end
-  end
-
-  def get_pickup
-    if after_hours?
-      day = increment(drop_off)
-      while closed?(day)
-        day = increment(day)
-      end
-      if special_hours?(day)
-        Time.parse(day.to_s + " " + get_special_hours(day)[:open].strftime("%H:%M:%S")) + extra_time
-      else
-        Time.parse(day.to_s + " " + hours[:open].strftime("%H:%M:%S")) + extra_time
-      end
-    else
-      pickup
-    end
-  end
-
-  def increment(day)
-    Date.parse(day.to_s) + 1
-    # day = Date.parse(day.to_s)
-    # Time.parse((day + 1).to_s + " " + drop_off_day.to_s + " " + hours[:open].strftime("%H:%M:%S"))
-  end
-
-  # def closed_tomorrow?(date)
-  #   closed_days_of_the_week.any? { |day| day.to_s.capitalize == date.strftime("%a") }
-  # end
 
   private
 
-  # def closed_that_week_day?
-  #   cal.hours[:closed].any? { |day| day.to_s.capitalize === pickup.strftime("%a")}
-  # end
-  #
-  # def closed_that_date?
-  #   cal.hours[:closed].any? do |day|
-  #     day.class != Symbol && Date.parse(day) === Date.parse(pickup.to_s)
-  #   end
-  # end
+    def get_pickup(date, duration)
+      open? ? find_pickup(date, duration) : next_day(date, duration)
+    end
+
+    def open?
+      DateInspector.new(cal, @date).open?
+    end
+
+    def find_pickup(date, duration)
+      special_hours? ? handle_special(date, duration) : handle_normal(date, duration)
+    end
+
+    def special_hours?
+      DateInspector.new(cal, @date).special_hours?
+    end
+
+    def handle_normal(date, duration)
+      if time_left?(date, duration)
+        calculate_pickup(date, duration)
+      else
+        keep_searching(date)
+      end
+    end
+
+    def handle_special(date, duration)
+      special_time_left?(date, duration) ? calculate_pickup(date, duration) : keep_searching(date)
+    end
+
+    def next_day(date, duration)
+      increment_date(date)
+      get_pickup(@date, duration)
+    end
+
+    def special_time_left?(date, duration)
+      (date + duration) <= DateInspector.new(cal, @date).get_special_closing
+    end
+
+    def time_left?(date, duration)
+      (date + duration) <= DateInspector.new(cal, @date).get_closing
+    end
+
+    def calculate_pickup(date, duration)
+      date + duration
+    end
+
+    def keep_searching(date)
+      remaining_duration(date)
+      increment_date(date)
+      get_pickup(@date, @duration)
+    end
+
+    def remaining_duration(date)
+      @duration = duration - (DateInspector.new(cal, @date).get_closing - date)
+    end
+
+    def increment_date(date)
+      @date = get_openning(date + 60 * 60 * 24)
+    end
+
+    def get_openning(date)
+      DateInspector.new(cal, date).get_openning
+    end
 end
