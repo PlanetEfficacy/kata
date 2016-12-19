@@ -40,26 +40,18 @@ describe Calendar do
   end
 
   describe Calendar, "#closed_days_of_the_week" do
-    it "returns an array of closed days" do
+    it "returns an array of closed symbol days" do
       calendar.closed(:sun, :tue, "Sep 5, 2016")
       expect(calendar.closed_days_of_the_week).to eq([:sun, :tue])
     end
   end
 
   describe Calendar, "#closed_days" do
-    it "returns an array of closed days" do
+    it "returns an array of closed string days" do
       calendar.closed(:sun, "Dec 17, 2016", "Sep 5, 2016")
       expect(calendar.closed_days).to eq(["Dec 17, 2016", "Sep 5, 2016"])
     end
   end
-
-  # describe Calendar, "#closed?(date)" do
-  #   it "returns true if closed on a given day" do
-  #     calendar.closed(:sun, "Dec 17, 2016")
-  #     expect(calendar.closed?(Date.parse("Dec 17, 2016"))).to eq(true)
-  #     expect(calendar.closed?(Date.parse("Dec 18, 2016"))).to eq(true)
-  #   end
-  # end
 
   describe Calendar, "#special_days" do
     it "returns an array of days with special hours" do
@@ -72,38 +64,6 @@ describe Calendar do
       expect(calendar.special_days).to eq(["Sep 7, 2016", "Jan 8, 2016", :mon])
     end
   end
-
-  # describe Calendar, "#special_hours?(date)" do
-  #   it "returns true if closed on a given day" do
-  #     calendar.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
-  #     expect(calendar.special_hours?(Date.parse("Sep 7, 2016"))).to eq(true)
-  #     expect(calendar.special_hours?(Date.parse("Dec 18, 2016"))).to eq(false)
-  #   end
-  # end
-  #
-  # describe Calendar, "#get_special_hours(date)" do
-  #   it "returns a hash of open and closed hours" do
-  #     calendar.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
-  #     hours = { open: Time.parse("8:00 AM"), close: Time.parse("1:00 PM")}
-  #     expect(calendar.get_special_hours(Date.parse("Sep 7, 2016"))).to eq(hours)
-  #   end
-  # end
-  #
-  # describe Calendar, "#get_special_openning(date)" do
-  #   it "returns the opnning of a given special day" do
-  #     calendar.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
-  #     openning = calendar.get_special_openning(Date.parse("Sep 7, 2016"))
-  #     expect(openning).to eq(Time.parse("8:00 AM"))
-  #   end
-  # end
-  #
-  # describe Calendar, "#get_special_openning(date)" do
-  #   it "returns the opnning of a given special day" do
-  #     calendar.update("Sep 7, 2016", "8:00 AM", "1:00 PM")
-  #     openning = calendar.get_special_closing(Date.parse("Sep 7, 2016"))
-  #     expect(openning).to eq(Time.parse("1:00 PM"))
-  #   end
-  # end
 
   describe Calendar, "#pickup_time" do
     it "returns the time the job is available to be picked up" do
@@ -141,31 +101,4 @@ describe Calendar do
       expect(pickup_3).to eq(expected_pickup_3)
     end
   end
-
-  describe Calendar, "#work_day" do
-    it "returns work day hours for a given date object" do
-      cal = shop.calendar
-      cal.open("9:00 AM", "3:00 PM")
-      cal.update(:fri, "10:00 AM", "5:00 PM")
-      cal.update("Sep 3, 2016", "8:00 AM", "1:00 PM")
-
-      hours_1 = { open: Time.parse("10:00 AM"), close: Time.parse("5:00 PM")}
-      hours_2 = { open: Time.parse("8:00 AM"), close: Time.parse("1:00 PM")}
-      hours_3 = { open: Time.parse("9:00 AM"), close: Time.parse("3:00 PM")}
-
-      expect(cal.work_day(Date.parse("Sep 2, 2016"))).to eq(hours_1)
-      expect(cal.work_day(Date.parse("Sep 3, 2016"))).to eq(hours_2)
-      expect(cal.work_day(Date.parse("Sep 4, 2016"))).to eq(hours_3)
-    end
-  end
-
-  # describe Calendar, "#open?" do
-  #   it "returns true if the shop is open on a given date" do
-  #     calendar.closed(:sun, "Dec 17, 2016")
-  #     expect(calendar.open?(Date.parse("Dec 17, 2016"))).to eq(false)
-  #     expect(calendar.open?(Date.parse("Dec 18, 2016"))).to eq(false)
-  #     expect(calendar.open?(Date.parse("Dec 19, 2016"))).to eq(true)
-  #     expect(calendar.open?(Date.parse("Dec 16, 2016"))).to eq(true)
-  #   end
-  # end
 end

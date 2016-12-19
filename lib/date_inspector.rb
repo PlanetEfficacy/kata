@@ -26,24 +26,11 @@ class DateInspector
   end
 
   def special_hours?
-    special_days.any? do |day|
-      if day.class != Symbol
-        Date.parse(day) == Date.parse(string_date)
-      else
-        day == day_of_week_symbol
-      end
-    end
+    special_days.any? { |day| match_day(day) }
   end
 
   def get_special_hours
-    day = special_days.find do |day|
-      if day.class != Symbol
-        Date.parse(day) == Date.parse(string_date)
-      else
-        day == day_of_week_symbol
-      end
-    end
-    hours[day]
+    hours[special_days.find { |day| match_day(day) }]
   end
 
   def get_special_openning
@@ -63,6 +50,14 @@ class DateInspector
   end
 
   private
+
+    def match_day(day)
+      if day.class != Symbol
+        Date.parse(day) == Date.parse(string_date)
+      else
+        day == day_of_week_symbol
+      end
+    end
 
     def closed_specific_day?
       closed_days && closed_days.map { |day| Date.parse(day) }.include?(Date.parse(@date.to_s))
