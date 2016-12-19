@@ -10,7 +10,6 @@ describe SchedulerRecursive do
       expect(scheduler.drop_off).to eq(Time.parse("Jun 6, 2016  9:10 AM"))
       expect(scheduler.date).to eq(Date.parse("Jun 6, 2016  9:10 AM"))
       expect(scheduler.duration).to eq(4320)
-      expect(scheduler.inspector).to be_instance_of(DateInspector)
     end
   end
 
