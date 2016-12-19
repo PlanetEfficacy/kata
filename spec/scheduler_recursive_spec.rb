@@ -38,9 +38,52 @@ describe SchedulerRecursive do
     end
 
     it "special day, duration before closing" do
+      cal.open("9:00 AM", "5:00 PM")
+      cal.update("Jun 6, 2016", "11:00 AM", "3:00 PM")
+      scheduler = SchedulerRecursive.new(cal, "Jun 6, 2016  2:00 PM", 3600)
+      expect(scheduler.run).to eq(Time.parse("Jun 6, 2016 3:00 PM"))
+    end
+
+    it "normal day drop off, duration after closing following day is special" do
       cal.open("9:00 AM", "10:00 AM")
-      cal.update("June 7, 2016", "11:00 AM", "3:00 PM")
+      cal.update("Jun 7, 2016", "11:00 AM", "3:00 PM")
       expect(scheduler.run).to eq(Time.parse("Jun 7, 2016 11:22 AM"))
+    end
+
+    it "special day, duration after closing" do
+      cal.open("9:00 AM", "5:00 PM")
+      cal.update("Jun 6, 2016", "11:00 AM", "3:00 PM")
+      scheduler = SchedulerRecursive.new(cal, "Jun 6, 2016  2:30 PM", 3600)
+      expect(scheduler.run).to eq(Time.parse("Jun 7, 2016 9:30 AM"))
+    end
+
+    it "special day, duration after closing, followed closed and special days" do
+      cal.open("9:00 AM", "5:00 PM")
+      cal.update("Jun 6, 2016", "11:00 AM", "3:00 PM")
+      cal.closed(:tue, "Jun 8, 2016", :fri)
+      cal.update("Jun 9, 2016", "2:00 PM", "2:15 PM")
+      cal.update(:sat, "2:00 PM", "2:05 PM")
+      scheduler = SchedulerRecursive.new(cal, "Jun 6, 2016  2:30 PM", 3600)
+
+      expect(scheduler.run).to eq(Time.parse("Jun 12, 2016 9:10 AM"))
+    end
+
+    it "special day, job duration longer than hours" do
+      cal.open("9:00 AM", "5:00 PM")
+      cal.update("Jun 6, 2016", "11:00 AM", "3:00 PM")
+      scheduler = SchedulerRecursive.new(cal, "Jun 6, 2016  2:30 PM", 36000)
+
+      expect(scheduler.run).to eq(Time.parse("Jun 8, 2016 10:30 AM"))
+    end
+
+    it "many special and closed days" do
+      cal.open("9:00 AM", "5:00 PM")
+      cal.closed(:tue, :wed, :thu, :fri, :sat, :sun, "Jun 13, 2016", "Jun 20, 2016")
+      cal.update("Jun 27, 2016", "2:00 AM", "2:01 AM")
+      cal.update("Jul 4, 2016", "2:00 AM", "2:09 AM")
+      scheduler = SchedulerRecursive.new(cal, "Jun 6, 2016  5:00 PM", 3600)
+      scheduler = SchedulerRecursive.new(cal, "Jun 6, 2016  5:00 PM", 3600)
+      expect(scheduler.run).to eq(Time.parse("Jul 11, 2016 9:50 AM"))
     end
   end
 end

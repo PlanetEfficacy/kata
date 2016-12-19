@@ -35,13 +35,15 @@ class SchedulerRecursive
     def get_pickup(date, duration)
       if DateInspector.new(cal, @date).open?
         if DateInspector.new(cal, @date).special_hours?
-          if (date + duration) < DateInspector.new(cal, @date).get_special_closing
+          if (date + duration) <= DateInspector.new(cal, @date).get_special_closing
             return date + duration
           else
-
+            remaining_duration = duration - (DateInspector.new(cal, @date).get_closing - date)
+            @date = get_openning(date + 60 * 60 * 24)
+            get_pickup(@date, remaining_duration)
           end
         else
-          if (date + duration) < DateInspector.new(cal, @date).get_closing
+          if (date + duration) <= DateInspector.new(cal, @date).get_closing
             return date + duration
           else
             remaining_duration = duration - (DateInspector.new(cal, @date).get_closing - date)
