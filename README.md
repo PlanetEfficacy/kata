@@ -1,4 +1,22 @@
+# Solution Notes
+
+#### Class documentation
+
 # The Challenge
+<table>
+  <thead>
+    <tr><td><b>Class</b></td><td><b>Notes</b></td></tr>
+  </thead>
+  <tbody>
+    <tr><td>Service</td><td>Has a name, duration and price</td></tr>
+    <tr><td>Package</td><td>A collection of services with a name, duration, and price</td></tr>
+    <tr><td>Shop</td><td>Has a name, has a menu of services and packages, has a calendar with hours of operation and can take on a job.</td></tr>
+    <tr><td>Job</td><td>Belongs to a shop and has many services and or packages.</td></tr>
+    <tr><td>Calendar</td><td>Holds the ours of operation for a shop. Can set normal business hours, special business hours, and closed days.</td></tr>
+    <tr><td>Date Inspector</td><td>Handles queries about single days, such as is the shop open, is it running special hours, and what are the hours. </td></tr>
+    <tr><td>Scheduler</td><td>Takes a calendar, drop off time, and job duration, and recursively searches over the calendar to find the soonest possible pick up time. It takes into account normal business hours, special business hours, durations that extend beyond business hours, and durations that extend beyond many business hours.</td></tr>
+  </tbody>
+</table>
 
 _Steezy's_ is a full-service ski & snowboard shop known for its speedy service. The problem is, when a customer drops off their equipment, they need to know how much it costs and what time it will be available for pickup.
 
@@ -94,5 +112,3 @@ The last example is the Saturday before the Labor Day holiday and Steezy's is on
 * You do not need to build a gem for this, pure Ruby code is all that is needed.
 
 **Tip:** Use `Time.parse` to generate a `Time` from a string. You may need to `require 'time'` in order to do this.
-
-
